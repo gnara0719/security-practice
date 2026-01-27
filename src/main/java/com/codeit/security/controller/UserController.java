@@ -24,7 +24,7 @@ public class UserController {
     // 방법 1: SecurityUtils 사용
     @GetMapping("/profile")
     public String profile(Model model) {
-        User user = SecurityUtils.getCurrentUsername()
+        User user = SecurityUtils.getCurrentUser()
                 .orElseThrow(() -> new IllegalStateException("로그인이 필요합니다."));
 
         log.info("profile accessed by: {}", user.getUsername());
@@ -45,5 +45,7 @@ public class UserController {
         info.put("username", user.getUsername());
         info.put("email", user.getEmail());
         info.put("role", user.getRole());
+
+        return info;
     }
 }

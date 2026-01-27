@@ -1,0 +1,43 @@
+
+spring:
+  application:
+    name: security-practice
+
+  # H2 Database
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  # JPA
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+
+  # Security
+  security:
+    user:
+      name: user
+
+# Logging
+logging:
+  level:
+    org.springframework.security: DEBUG
+    com.codeit.security: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+# Server
+server:
+  port: 8080

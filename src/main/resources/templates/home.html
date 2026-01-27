@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Spring Security 실습</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        .user-info {
+            background-color: #f0f0f0;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+
+        .links {
+            margin: 20px 0;
+        }
+
+        .links a {
+            display: block;
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 3px;
+            text-align: center;
+        }
+
+        .links a:hover {
+            background-color: #0056b3;
+        }
+
+        form {
+            display: inline;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+<h1>🔐 Spring Security 실습 프로젝트</h1>
+
+<div class="user-info" sec:authorize="isAuthenticated()">
+    <h2>안녕하세요, <span sec:authentication="name">사용자</span>님!</h2>
+    <p>역할: <span sec:authentication="principal.authorities">권한</span></p>
+
+    <form th:action="@{/logout}" method="post">
+        <button type="submit">로그아웃</button>
+    </form>
+</div>
+
+<div class="user-info" sec:authorize="isAnonymous()">
+    <p>로그인하지 않았습니다.</p>
+    <a href="/login">로그인하기</a>
+</div>
+
+<div class="links">
+    <h3>실습 메뉴</h3>
+    <a href="/user/profile">내 프로필</a>
+    <a href="/admin/dashboard">관리자 대시보드</a>
+    <a href="/public/info">공개 정보</a>
+</div>
+</body>
+</html>

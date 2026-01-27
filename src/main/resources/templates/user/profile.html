@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>내 프로필</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .profile-card {
+            background-color: #f9f9f9;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .profile-item {
+            margin: 15px 0;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        .label {
+            font-weight: bold;
+            color: #555;
+        }
+        .value {
+            color: #333;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="profile-card">
+    <h1>👤 내 프로필</h1>
+
+    <div class="profile-item">
+        <span class="label">ID:</span>
+        <span class="value" th:text="${user.id}"></span>
+    </div>
+
+    <div class="profile-item">
+        <span class="label">사용자명:</span>
+        <span class="value" th:text="${user.username}"></span>
+    </div>
+
+    <div class="profile-item">
+        <span class="label">이메일:</span>
+        <span class="value" th:text="${user.email}"></span>
+    </div>
+
+    <div class="profile-item">
+        <span class="label">권한:</span>
+        <span class="value" th:text="${user.role}"></span>
+    </div>
+
+    <a href="/">홈으로</a>
+</div>
+</body>
+</html>

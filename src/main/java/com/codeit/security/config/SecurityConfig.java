@@ -6,6 +6,7 @@ import com.codeit.security.filter.RequestLoggingFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -29,9 +30,10 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    // Spring Security의 보안 필터 체인을 구성하고 조립하는 역할
+    // Spring Security의 보안 필터 체인을 구성하고 조립하는 역할 (절차 규칙 설정)
+    // RoleHierarchy를 매개변수로 선언하면 filterChain에서 권한 계층이 적용 (빈운 사전에 등록)
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, RoleHierarchy roleHierarchy) throws Exception {
         http
                 // 인증 필터 동작 전에 로깅하기 위해 필터 추가
                 .addFilterBefore(requestIdFilter, UsernamePasswordAuthenticationFilter.class)

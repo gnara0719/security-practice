@@ -5,7 +5,10 @@ import com.codeit.security.filter.RequestIdFilter;
 import com.codeit.security.filter.RequestLoggingFilter;
 import com.codeit.security.security.CustomAccessDeniedHandler;
 import com.codeit.security.security.CustomAuthenticationEntryPoint;
+import com.codeit.security.security.SpaCsrfTokenRequestHandler;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
@@ -16,6 +19,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 @Configuration
 @RequiredArgsConstructor
@@ -37,8 +42,12 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, RoleHierarchy roleHierarchy,
                                            CustomAccessDeniedHandler deniedHandler,
-                                           CustomAuthenticationEntryPoint authenticationEntryPoint) throws Exception {
+                                           CustomAuthenticationEntryPoint authenticationEntryPoint,
+                                           @Qualifier("corsConfigSource") CorsConfigurationSource corsConfigurationSource) throws Exception {
         http
+                .cors(cors -> cors
+                        .configurationSource(corsConfigurationSource)
+                )
                 // 인증 필터 동작 전에 로깅하기 위해 필터 추가
                 .addFilterBefore(requestIdFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterAfter(ipCheckFilter, RequestIdFilter.class)
@@ -53,6 +62,7 @@ public class SecurityConfig {
                         .requestMatchers("/", "/signup", "/login").permitAll()
                         .requestMatchers("/css/**", "/js/**", "/public/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
+                        .requestMatchers("/api/auth/csrf-token").permitAll() // 토큰 발급용 엔드포인트는 로그인 없이 접근 가능
 
                         // ADMIN 권한 필요
                         // hasRole("ADMIN"): "ROLE_ADMIN" 권한 확인 -> 보통 얘를 사용
@@ -81,8 +91,10 @@ public class SecurityConfig {
                         .logoutSuccessUrl("/login?logout")
                         .permitAll())
 
-                // h2는 CSRF 검증 제외
-                .csrf(csrf -> csrf.ignoringRequestMatchers("/h2-console/**"))
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/h2-console/**") // H2는 CSRF 검증 제외
+                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()) // 쿠키에 저장 & 프론트엔드에서 읽을 수 있게 허용
+                        .csrfTokenRequestHandler(new SpaCsrfTokenRequestHandler())) // 방금 만든 핸들러 등록
                 .headers(headers -> headers
                         .frameOptions(frame -> frame.sameOrigin()) // 같은 사이트에서 iframe을 사용하는 것을 허용
                 );

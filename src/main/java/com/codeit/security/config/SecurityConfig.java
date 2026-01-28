@@ -3,6 +3,8 @@ package com.codeit.security.config;
 import com.codeit.security.filter.IpCheckFilter;
 import com.codeit.security.filter.RequestIdFilter;
 import com.codeit.security.filter.RequestLoggingFilter;
+import com.codeit.security.security.CustomAccessDeniedHandler;
+import com.codeit.security.security.CustomAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,7 +35,9 @@ public class SecurityConfig {
     // Spring Security의 보안 필터 체인을 구성하고 조립하는 역할 (절차 규칙 설정)
     // RoleHierarchy를 매개변수로 선언하면 filterChain에서 권한 계층이 적용 (빈운 사전에 등록)
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, RoleHierarchy roleHierarchy) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, RoleHierarchy roleHierarchy,
+                                           CustomAccessDeniedHandler deniedHandler,
+                                           CustomAuthenticationEntryPoint authenticationEntryPoint) throws Exception {
         http
                 // 인증 필터 동작 전에 로깅하기 위해 필터 추가
                 .addFilterBefore(requestIdFilter, UsernamePasswordAuthenticationFilter.class)
@@ -63,6 +67,9 @@ public class SecurityConfig {
                         // 나머지는 인증만 필요 (권한 무관)
                         .anyRequest().authenticated()
                 )
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(authenticationEntryPoint) // 인증
+                        .accessDeniedHandler(deniedHandler))    // 인가
 
                 // 로그인 폼 설정 (REST)에서는 사용하지 않음
                 .formLogin(form -> form.

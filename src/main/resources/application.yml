@@ -42,3 +42,9 @@ logging:
 # Server
 server:
   port: 8080
+  servlet:
+    session:
+      timeout: 30m # 30분 후 세션 자동 만료
+      cookie: # 이 설정의 대상은 인증 과정에서 생성되는 쿠키에 대한 설정 (모든 쿠키가 아님)
+        http-only: true # Javascript가 쿠키를 제어하지 못하게 설정
+        secure: false # HTTPS가 아닌 환경에서 쿠키를 전송 여부

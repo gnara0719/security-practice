@@ -225,7 +225,7 @@
                     <form th:action="@{/admin/sessions/{username}/expire(username=${info.username})}"
                           method="post"
                           style="display: inline;"
-                          onsubmit="return confirm('정말로 ' + '[[${info.username}]]' + ' 사용자의 모든 세션을 강제 로그아웃시키겠습니까?');">
+                          onsubmit="return confirm('정말로 ${info.username} 사용자의 모든 세션을 강제 로그아웃시키겠습니까?');">
                         <button type="submit" class="btn">강제 로그아웃</button>
                     </form>
                 </td>

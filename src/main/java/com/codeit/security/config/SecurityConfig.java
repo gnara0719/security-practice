@@ -3,11 +3,12 @@ package com.codeit.security.config;
 import com.codeit.security.filter.IpCheckFilter;
 import com.codeit.security.filter.RequestIdFilter;
 import com.codeit.security.filter.RequestLoggingFilter;
+import com.codeit.security.filter.SessionIdLoggingFilter;
 import com.codeit.security.security.CustomAccessDeniedHandler;
 import com.codeit.security.security.CustomAuthenticationEntryPoint;
+import com.codeit.security.security.CustomAuthenticationSuccessHandler;
 import com.codeit.security.security.SpaCsrfTokenRequestHandler;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -34,6 +35,7 @@ public class SecurityConfig {
     private final IpCheckFilter ipCheckFilter;
     private final RequestIdFilter requestIdFilter;
     private final SessionRegistry sessionRegistry;
+    private final CustomAuthenticationSuccessHandler authenticationSuccessHandler;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -52,7 +54,8 @@ public class SecurityConfig {
                         .configurationSource(corsConfigurationSource)
                 )
                 // 인증 필터 동작 전에 로깅하기 위해 필터 추가
-                .addFilterBefore(requestIdFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new SessionIdLoggingFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(requestIdFilter, SessionIdLoggingFilter.class)
                 .addFilterAfter(ipCheckFilter, RequestIdFilter.class)
                 .addFilterAfter(requestLoggingFilter, IpCheckFilter.class)
 
@@ -85,8 +88,9 @@ public class SecurityConfig {
                         .accessDeniedHandler(deniedHandler))    // 인가
 
                 // 로그인 폼 설정 (REST)에서는 사용하지 않음
-                .formLogin(form -> form.
-                        loginPage("/login") // 커스텀 로그인 페이지 경로
+                .formLogin(form -> form
+                        .loginPage("/login") // 커스텀 로그인 페이지 경로
+                        .successHandler(authenticationSuccessHandler)
                         .permitAll())
 
                 // 로그아웃 설정
@@ -103,7 +107,7 @@ public class SecurityConfig {
                 )
 
                 .sessionManagement(session -> session
-//                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS) -> JWT는 세션 안씀
+                        // .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // -> JWT는 세션 안씀
                         .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                         .invalidSessionUrl("/session-expired") // 세션 만료 시 이동할 URL
 
@@ -114,6 +118,10 @@ public class SecurityConfig {
                                 .sessionRegistry(sessionRegistry)
                                 .expiredUrl("/session-expired")
                         )
+                        //.sessionFixation().changeSessionId() // 세션 ID만 변경하고 세션 객체는 그대로 유지
+                        //.sessionFixation().migrateSession() // 새 세션을 생성해서 기존 세션의 모든 속성을 복사 후 기존 세션 무효화
+                        //.sessionFixation().newSession() // 새 세션을 생성, 기존 데이터 유지되지 않음
+                        .sessionFixation().none() // 사용하지 않음, 아무것도 하지 않음
                 );
 
         return http.build();

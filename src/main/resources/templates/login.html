@@ -13,27 +13,32 @@
             height: 100vh;
             margin: 0;
         }
+
         .login-container {
             background-color: white;
             padding: 40px;
             border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             width: 100%;
             max-width: 400px;
         }
+
         h1 {
             text-align: center;
             color: #333;
             margin-bottom: 30px;
         }
+
         .form-group {
             margin-bottom: 20px;
         }
+
         label {
             display: block;
             margin-bottom: 5px;
             color: #666;
         }
+
         input[type="text"],
         input[type="password"] {
             width: 100%;
@@ -42,6 +47,7 @@
             border-radius: 4px;
             box-sizing: border-box;
         }
+
         button {
             width: 100%;
             padding: 12px;
@@ -52,9 +58,11 @@
             cursor: pointer;
             font-size: 16px;
         }
+
         button:hover {
             background-color: #0056b3;
         }
+
         .error {
             color: #dc3545;
             background-color: #f8d7da;
@@ -62,6 +70,7 @@
             border-radius: 4px;
             margin-bottom: 20px;
         }
+
         .logout {
             color: #28a745;
             background-color: #d4edda;
@@ -69,10 +78,12 @@
             border-radius: 4px;
             margin-bottom: 20px;
         }
+
         .signup-link {
             text-align: center;
             margin-top: 20px;
         }
+
         .signup-link a {
             color: #007bff;
             text-decoration: none;
@@ -101,6 +112,75 @@
             <label for="password">비밀번호</label>
             <input type="password" id="password" name="password" required>
         </div>
+
+        <!-- Remember-Me 체크박스 -->
+        <div class="remember-me-container" style="
+            margin: 20px 0;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border: 1px solid #dee2e6;
+        ">
+            <label style="
+                display: flex;
+                align-items: center;
+                cursor: pointer;
+                margin: 0;
+                flex: 1;
+            ">
+                <input type="checkbox"
+                       name="remember-me"
+                       id="remember-me"
+                       style="
+                           width: 20px;
+                           height: 20px;
+                           margin-right: 12px;
+                           cursor: pointer;
+                           accent-color: #667eea;
+                       ">
+                <div style="flex: 1;">
+                    <span style="
+                        font-size: 16px;
+                        font-weight: 600;
+                        color: #333;
+                    ">
+                        로그인 상태 유지 (14일)
+                    </span>
+                    <div style="
+                        font-size: 13px;
+                        color: #666;
+                        margin-top: 4px;
+                    ">
+                        브라우저를 닫아도 자동으로 로그인됩니다
+                    </div>
+                </div>
+            </label>
+        </div>
+
+        <!-- 보안 경고 -->
+        <div style="
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: start;
+            font-size: 13px;
+        ">
+            <span style="
+                font-size: 20px;
+                margin-right: 8px;
+            ">⚠️</span>
+            <div>
+                <strong>보안 주의사항:</strong><br>
+                공용 PC나 타인의 기기에서는 체크하지 마세요!
+            </div>
+        </div>
+
 
         <button type="submit">로그인</button>
     </form>

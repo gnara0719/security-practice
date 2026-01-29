@@ -32,5 +32,5 @@ CREATE TABLE IF NOT EXISTS persistent_logins (
 
 -- 성능 최적화: username으로 조회 가능
 -- 사용자의 모든 Remember-Me 토큰 조회 시 사용
-CREATE INDEX idx_persistent_logins_username
+CREATE INDEX IF NOT EXISTS idx_persistent_logins_username
     ON persistent_logins(username);

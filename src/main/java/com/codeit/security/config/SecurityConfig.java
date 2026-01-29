@@ -16,6 +16,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -32,6 +33,7 @@ public class SecurityConfig {
     private final RequestLoggingFilter requestLoggingFilter;
     private final IpCheckFilter ipCheckFilter;
     private final RequestIdFilter requestIdFilter;
+    private final SessionRegistry sessionRegistry;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -57,12 +59,12 @@ public class SecurityConfig {
                 // 특정 경로에 대한 권한을 설정
                 // 위에서 아래로 순차적 평가, 먼저 매칭되면 그것을 적용
                 // 구체적인 것을 위에, 일반적인 것을 아래에
-                .authorizeHttpRequests( auth -> auth
+                .authorizeHttpRequests(auth -> auth
                         // 공개 접근 (인증 불필요)
                         // .anonymous(): 로그인하지 않은 사용자만 허용
                         .requestMatchers("/", "/signup", "/login").permitAll()
                         .requestMatchers("/css/**", "/js/**", "/public/**").permitAll()
-                        .requestMatchers("/h2-console/**").permitAll()
+                        .requestMatchers("/h2-console/**", "session-expired").permitAll()
                         .requestMatchers("/api/auth/csrf-token").permitAll() // 토큰 발급용 엔드포인트는 로그인 없이 접근 가능
 
                         // ADMIN 권한 필요
@@ -104,8 +106,14 @@ public class SecurityConfig {
 //                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS) -> JWT는 세션 안씀
                         .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                         .invalidSessionUrl("/session-expired") // 세션 만료 시 이동할 URL
-                        .maximumSessions(1) // 한 사용자 당 최대 세션 수
-                        .maxSessionsPreventsLogin(false) // false: 새 로그인 시 이전 세션 만료, true: 이미 로그인 되어있다면 새 로그인 차단
+
+                        // 동시성 관련 설정은 블록 안에서 작성
+                        .sessionConcurrency(concurrency -> concurrency
+                                .maximumSessions(1) // 한 사용자 당 최대 세션 수
+                                .maxSessionsPreventsLogin(false) // false: 새 로그인 시 이전 세션 만료, true: 이미 로그인 되어있다면 새 로그인 차단
+                                .sessionRegistry(sessionRegistry)
+                                .expiredUrl("/session-expired")
+                        )
                 );
 
         return http.build();

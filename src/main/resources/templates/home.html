@@ -70,6 +70,9 @@
     <form th:action="@{/logout}" method="post">
         <button type="submit">로그아웃</button>
     </form>
+    <a href="/admin/sessions" class="logout-btn" style="background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%); margin-left: 10px;">
+        🔐 세션 관리 (관리자)
+    </a>
 </div>
 
 <div class="user-info" sec:authorize="isAnonymous()">
